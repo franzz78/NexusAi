@@ -29,31 +29,46 @@ let activeSessionReference = null;
 let abortControllerInstance = null;
 let localUploadBlob = null;
 
-// LLM Micro-Routing Provider Factory Integration Suite Engine
+// --- LLM ENGINE WITH NATIVE GEMINI STREAMING SUPPORT ---
 const AI_ORCHESTRATOR = {
     async queryProvider(prompt, configuration, trackingCallback) {
-        const payload = {
+        const isGemini = configuration.provider === "gemini";
+        
+        // Define dynamic API endpoints
+        let targetEndpoint = "https://api.openai.com/v1/chat/completions";
+        if (configuration.provider === "deepseek") targetEndpoint = "https://api.deepseek.com/v1/chat/completions";
+        if (configuration.provider === "groq") targetEndpoint = "https://api.groq.com/openai/v1/chat/completions";
+        if (isGemini) {
+            const geminiModel = configuration.model || "gemini-1.5-pro";
+            targetEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:streamContent?key=${configuration.token}`;
+        }
+
+        // Configure headers based on provider protocol
+        const headers = { "Content-Type": "application/json" };
+        if (!isGemini) {
+            headers["Authorization"] = `Bearer ${configuration.token}`;
+        }
+
+        // Setup payloads
+        const openAiPayload = {
             model: configuration.model || "gpt-4o",
             messages: [{ role: "user", content: prompt }],
             stream: true
         };
-        
-        let targetEndpoint = "https://api.openai.com/v1/chat/completions";
-        if(configuration.provider === "deepseek") targetEndpoint = "https://api.deepseek.com/v1/chat/completions";
-        if(configuration.provider === "groq") targetEndpoint = "https://api.groq.com/openai/v1/chat/completions";
+
+        const geminiPayload = {
+            contents: [{ parts: [{ text: prompt }] }]
+        };
 
         try {
             const response = await fetch(targetEndpoint, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${configuration.token}`
-                },
-                body: JSON.stringify(payload),
+                headers: headers,
+                body: JSON.stringify(isGemini ? geminiPayload : openAiPayload),
                 signal: configuration.signal
             });
 
-            if (!response.ok) throw new Error(`HTTP Error Variant: ${response.status}`);
+            if (!response.ok) throw new Error(`HTTP Matrix Error: ${response.status}`);
             
             const reader = response.body.getReader();
             const decoder = new TextDecoder("utf-8");
@@ -64,17 +79,34 @@ const AI_ORCHESTRATOR = {
                 if (done) break;
                 
                 const chunk = decoder.decode(value, { stream: true });
-                const lines = chunk.split("\n").filter(line => line.trim() !== "");
-                
-                for (const line of lines) {
-                    if (line.includes("[DONE]")) continue;
-                    if (line.startsWith("data: ")) {
-                        try {
-                            const parsed = JSON.parse(line.replace("data: ", ""));
-                            const token = parsed.choices[0]?.delta?.content || "";
-                            accumulatedString += token;
-                            trackingCallback(accumulatedString);
-                        } catch (e) { /* Guarding segment parsing errors */ }
+
+                if (isGemini) {
+                    try {
+                        const cleanedChunk = chunk.replace(/^data:\s*/gm, '').trim();
+                        if (cleanedChunk) {
+                            const jsonObjects = cleanedChunk.startsWith("[") && cleanedChunk.endsWith("]") 
+                                ? JSON.parse(cleanedChunk) 
+                                : [JSON.parse(cleanedChunk)];
+                                
+                            for (const obj of jsonObjects) {
+                                const textFragment = obj.candidates?.[0]?.content?.parts?.[0]?.text || "";
+                                accumulatedString += textFragment;
+                                trackingCallback(accumulatedString);
+                            }
+                        }
+                    } catch (e) { /* Buffer alignment handling */ }
+                } else {
+                    const lines = chunk.split("\n").filter(line => line.trim() !== "");
+                    for (const line of lines) {
+                        if (line.includes("[DONE]")) continue;
+                        if (line.startsWith("data: ")) {
+                            try {
+                                const parsed = JSON.parse(line.replace("data: ", ""));
+                                const token = parsed.choices[0]?.delta?.content || "";
+                                accumulatedString += token;
+                                trackingCallback(accumulatedString);
+                            } catch (e) { /* Guarding segment parsing errors */ }
+                        }
                     }
                 }
             }
@@ -396,4 +428,4 @@ window.addEventListener("load", () => {
         .catch(err => console.error("SW failure:", err));
     }
 });
-  
+      
