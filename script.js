@@ -5,7 +5,7 @@ import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, ge
 import { getDatabase, ref, set, onValue, push, serverTimestamp as rdbTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
-// --- FIRATION INFRASTRUCTURE SUITE CONFIGURATION ---
+// --- POLRI ABSENSI SECURE CORE CONFIGURATION ---
 const firebaseConfig = {
   apiKey: "AIzaSyD9BmV4XKXuMWa4PZHpb7Bbt-rHs61m3lE",
   authDomain: "absensi-polri.firebaseapp.com",
@@ -16,7 +16,7 @@ const firebaseConfig = {
   appId: "1:19006760644:web:b980f54aea123e92ed4b91"
 };
 
-// Initialize Nodes
+// Initialize Nodes securely
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -38,7 +38,6 @@ const AI_ORCHESTRATOR = {
             stream: true
         };
         
-        // Dynamic construction logic depending on operational keys injected into settings
         let targetEndpoint = "https://api.openai.com/v1/chat/completions";
         if(configuration.provider === "deepseek") targetEndpoint = "https://api.deepseek.com/v1/chat/completions";
         if(configuration.provider === "groq") targetEndpoint = "https://api.groq.com/openai/v1/chat/completions";
@@ -107,15 +106,13 @@ function switchAppView(viewId) {
         const matchingLink = document.querySelector(`.nav-links li[data-view="${viewId}"]`);
         if (matchingLink) matchingLink.classList.add("active");
     }
-    // Auto collapse layout overlay if visible inside mobile views
     document.getElementById("sidebar").classList.remove("open");
 }
 
-// Sidebar Drawer UI Controls toggle mechanics
 document.getElementById("toggleSidebar").addEventListener("click", () => document.getElementById("sidebar").classList.add("open"));
 document.getElementById("closeSidebar").addEventListener("click", () => document.getElementById("sidebar").classList.remove("open"));
 
-// Light Dark Core Variable Toggling Matrix
+// Workspace Light/Dark Mode Matrix Switcher
 document.getElementById("themeToggle").addEventListener("click", () => {
     const rootElement = document.documentElement;
     const currentTheme = rootElement.getAttribute("data-theme");
@@ -131,11 +128,9 @@ onAuthStateChanged(auth, async (user) => {
         document.getElementById("authModal").classList.remove("active");
         showToastNotification(`Session identity mapped securely: ${user.uid.substring(0, 8)}`);
         
-        // Provision global structural profile changes details on sidebars
         document.getElementById("navUsername").innerText = user.displayName || "Operator Node";
         document.getElementById("navAvatar").src = user.photoURL || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150";
         
-        // Fire up Realtime Operational Database Presence Vectors
         initializeUserPresence(user);
         syncDashboardStats();
     } else {
@@ -144,7 +139,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-// Auth Handlers Form Submit logic binding
+// Auth Click Handlers
 document.getElementById("emailAuthForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("authEmail").value;
@@ -189,7 +184,6 @@ function initializeUserPresence(user) {
         deviceUserAgent: navigator.userAgent
     });
 
-    // Mirror updates to general platform counts
     onValue(ref(rdb, 'telemetry/online_nodes'), (snapshot) => {
         const connectionObject = snapshot.val();
         const globalCount = connectionObject ? Object.keys(connectionObject).length : 1;
@@ -205,12 +199,10 @@ mainSearchForm.addEventListener("submit", async (e) => {
     const queryTerm = document.getElementById("mainSearchInput").value.trim();
     if (!queryTerm) return;
 
-    // Direct routing initialization logic
     switchAppView("ai-search-view");
     document.getElementById("searchQueryDisplay").innerText = `"${queryTerm}"`;
     const responseBox = document.getElementById("searchResponseContent");
     
-    // Inject Loading Sequence UI Matrix
     responseBox.innerHTML = `
         <div class="skeleton-loader">
             <div class="skeleton-line width-80"></div>
@@ -219,14 +211,12 @@ mainSearchForm.addEventListener("submit", async (e) => {
         </div>
     `;
 
-    // Extract User System Configuration Matrices
     const provider = document.getElementById("apiProviderSelect").value;
     const token = document.getElementById("apiKeyInput").value || "MOCK_DEVELOPER_ISOLATED_TOKEN";
 
     abortControllerInstance = new AbortController();
 
     try {
-        // Log transaction to persistent indexing cluster before execution complete
         if (currentUserInstance) {
             await addDoc(collection(db, "search_records"), {
                 userId: currentUserInstance.uid,
@@ -241,7 +231,6 @@ mainSearchForm.addEventListener("submit", async (e) => {
             token: token,
             signal: abortControllerInstance.signal
         }, (streamedChunk) => {
-            // Render structured engine returns securely via safety sanitized markdown transforms
             responseBox.innerHTML = marked.parse(streamedChunk);
         });
 
@@ -261,11 +250,9 @@ chatForm.addEventListener("submit", async (e) => {
     const rawInput = chatInput.value.trim();
     if(!rawInput && !localUploadBlob) return;
 
-    // Commit input display layout change sequences
     appendMessageBubble(rawInput, 'user-message');
     chatInput.value = "";
     
-    // Construct dynamic response anchor within layout
     const aiResponseBubble = appendMessageBubble("", 'ai-message');
     const innerBubbleTextSpan = aiResponseBubble.querySelector(".message-bubble");
     
@@ -281,13 +268,11 @@ chatForm.addEventListener("submit", async (e) => {
     try {
         let enhancedPrompt = rawInput;
         if(localUploadBlob) {
-            // Secure transaction sequence to cloud store
             const storagePathRef = storageRef(storage, `context_payloads/${Date.now()}_${localUploadBlob.name}`);
             const uploadSnapshot = await uploadBytes(storagePathRef, localUploadBlob);
             const downloadUrl = await getDownloadURL(uploadSnapshot.ref);
             enhancedPrompt += ` [Attached Context Document Media Reference Matrix: ${downloadUrl}]`;
             
-            // Wipe variable container states out safely
             localUploadBlob = null;
             document.getElementById("imagePreviewContainer").style.display = "none";
         }
@@ -297,7 +282,6 @@ chatForm.addEventListener("submit", async (e) => {
             chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
         });
 
-        // Sync data down to base collections
         if(currentUserInstance) {
             await addDoc(collection(db, "chat_records"), {
                 userId: currentUserInstance.uid,
@@ -327,7 +311,6 @@ function appendMessageBubble(text, classModifier) {
     return msgWrapper;
 }
 
-// Handle Context Attachment Selection Changes
 imageUploadInput.addEventListener("change", (e) => {
     const selectedFile = e.target.files[0];
     if(selectedFile) {
@@ -349,7 +332,6 @@ document.getElementById("removePreviewBtn").addEventListener("click", () => {
 async function syncDashboardStats() {
     if(!currentUserInstance) return;
     
-    // Create live telemetry listeners via snapshot loops
     const searchHistoryQuery = query(collection(db, "search_records"), where("userId", "==", currentUserInstance.uid));
     onSnapshot(searchHistoryQuery, (snapshot) => {
         document.getElementById("statTotalSearches").innerText = snapshot.size;
@@ -388,7 +370,6 @@ function renderHistoryLists(docArray) {
         listWrapper.appendChild(row);
     });
 
-    // Connect purge element query handlers
     listWrapper.querySelectorAll(".delete-rec-btn").forEach(btn => {
         btn.addEventListener("click", async () => {
             const documentTargetId = btn.getAttribute("data-id");
@@ -398,7 +379,6 @@ function renderHistoryLists(docArray) {
     });
 }
 
-// Global Core UI Alerts Display Machine
 function showToastNotification(message) {
     const container = document.getElementById("toastContainer");
     const toast = document.createElement("div");
@@ -408,12 +388,12 @@ function showToastNotification(message) {
     setTimeout(() => { toast.remove(); }, 4000);
 }
 
-// --- INITIALIZATION INTERCEPT ENGINE ---
+// Service Worker Registration
 window.addEventListener("load", () => {
     if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("sw.js")
-        .then(() => console.log("Nexus Cache Core service optimization offline structural pipelines operational."))
-        .catch(err => console.error("Service worker registration exception intercepted:", err));
+        .then(() => console.log("Cache parameters live."))
+        .catch(err => console.error("SW failure:", err));
     }
 });
   
