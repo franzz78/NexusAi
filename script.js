@@ -7,13 +7,13 @@ import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "http
 
 // --- FIRATION INFRASTRUCTURE SUITE CONFIGURATION ---
 const firebaseConfig = {
-    apiKey: "YOUR_FIREBASE_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyD9BmV4XKXuMWa4PZHpb7Bbt-rHs61m3lE",
+  authDomain: "absensi-polri.firebaseapp.com",
+  databaseURL: "https://absensi-polri-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "absensi-polri",
+  storageBucket: "absensi-polri.firebasestorage.app",
+  messagingSenderId: "19006760644",
+  appId: "1:19006760644:web:b980f54aea123e92ed4b91"
 };
 
 // Initialize Nodes
