@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS // AI Search Engine</title>
+    <meta name="description" content="Futuristic AI-powered search engine and chat platform.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d0e15">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fa-solid fa-atom pulse-icon"></i>
+                    <span>NEXUS</span>
+                </div>
+                <button class="icon-btn close-sidebar-btn" id="closeSidebar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-view="home-view"><i class="fa-solid fa-house"></i> <span>Home</span></li>
+                <li data-view="ai-search-view"><i class="fa-solid fa-magnifying-glass-chart"></i> <span>AI Search</span></li>
+                <li data-view="ai-chat-view"><i class="fa-solid fa-comments"></i> <span>AI Chat</span></li>
+                <li data-view="dashboard-view"><i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span></li>
+                <li data-view="history-view"><i class="fa-solid fa-history"></i> <span>History</span></li>
+                <li data-view="favorites-view"><i class="fa-solid fa-bookmark"></i> <span>Favorites</span></li>
+                <li data-view="settings-view"><i class="fa-solid fa-gear"></i> <span>Settings</span></li>
+                <li data-view="profile-view"><i class="fa-solid fa-user-glow"></i> <span>Profile</span></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-shortcut" id="userShortcut">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" alt="Avatar" id="navAvatar" class="avatar-sm">
+                    <span id="navUsername">Anonymous</span>
+                </div>
+                <button class="logout-btn" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></button>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-navbar">
+                <button class="icon-btn toggle-sidebar-btn" id="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
+                <div class="top-nav-right">
+                    <div class="analytics-pill">
+                        <i class="fa-solid fa-eye text-glow"></i> <span id="liveVisitorsCount">1</span> Live
+                    </div>
+                    <button class="icon-btn" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
+                    <button class="icon-btn notification-bell"><i class="fa-solid fa-bell"></i><span class="badge"></span></button>
+                </div>
+            </header>
+
+            <div class="view-viewport">
+
+                <section id="home-view" class="app-view active-view">
+                    <div class="hero-section">
+                        <div class="glow-logo-container">
+                            <i class="fa-solid fa-atom main-logo"></i>
+                            <h1 class="neon-text">NEXUS AI</h1>
+                            <p class="subtitle">The Core of Autonomous Intelligence</p>
+                        </div>
+
+                        <div class="search-wrapper">
+                            <form id="mainSearchForm" class="search-form">
+                                <div class="search-input-container">
+                                    <i class="fa-solid fa-magnifying-glass search-icon-left"></i>
+                                    <input type="text" id="mainSearchInput" placeholder="Decode the universe, explain code, analyze math..." autocomplete="off">
+                                    <div class="search-actions-right">
+                                        <button type="button" class="search-action-btn" title="Voice Search"><i class="fa-solid fa-microphone"></i></button>
+                                        <button type="submit" class="search-submit-btn"><i class="fa-solid fa-arrow-right"></i></button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="search-suggestions" id="searchSuggestions"></div>
+                        </div>
+
+                        <div class="quick-tags">
+                            <span class="tag">#SummarizeArticles</span>
+                            <span class="tag">#FixMyCode</span>
+                            <span class="tag">#CalculusSolver</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="ai-search-view" class="app-view">
+                    <div class="search-results-layout">
+                        <div class="results-header">
+                            <div class="search-bar-mini">
+                                <input type="text" id="miniSearchInput" placeholder="Ask another question...">
+                                <button id="miniSearchBtn"><i class="fa-solid fa-bolt"></i></button>
+                            </div>
+                        </div>
+                        <div class="results-body">
+                            <div class="ai-response-card glass">
+                                <div class="card-header">
+                                    <div class="provider-info">
+                                        <i class="fa-solid fa-brain text-glow"></i>
+                                        <span class="engine-status">NEXUS AI ENGINE // <span id="activeModelBadge">GPT-4o</span></span>
+                                    </div>
+                                    <div class="card-actions">
+                                        <button class="icon-btn" id="favCurrentSearch" title="Bookmark Search"><i class="fa-regular fa-bookmark"></i></button>
+                                        <button class="icon-btn" id="copySearchResponse" title="Copy Response"><i class="fa-regular fa-copy"></i></button>
+                                    </div>
+                                </div>
+                                <div class="search-query-display" id="searchQueryDisplay">"What is quantum entanglement?"</div>
+                                <div class="response-content" id="searchResponseContent">
+                                    <div class="skeleton-loader">
+                                        <div class="skeleton-line width-80"></div>
+                                        <div class="skeleton-line width-100"></div>
+                                        <div class="skeleton-line width-60"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="ai-chat-view" class="app-view">
+                    <div class="chat-interface glass">
+                        <div class="chat-header">
+                            <div class="chat-meta">
+                                <div class="status-dot online"></div>
+                                <h3>Neural Stream Session</h3>
+                            </div>
+                            <div class="chat-controls">
+                                <button class="btn btn-sm" id="clearChatBtn"><i class="fa-solid fa-trash-can"></i> Reset</button>
+                            </div>
+                        </div>
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message ai-message">
+                                <div class="message-avatar"><i class="fa-solid fa-robot"></i></div>
+                                <div class="message-bubble">
+                                    Greetings. I am connected via your preferred neural provider. Send a message, upload complex documents/images, or request deep system configurations.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="typing-indicator-wrapper" id="typingIndicator">
+                            <span id="typingUserText">AI is writing</span>
+                            <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+                        </div>
+                        <div class="chat-input-area">
+                            <form id="chatForm">
+                                <div class="preview-upload-container" id="imagePreviewContainer" style="display:none;">
+                                    <img src="" id="imagePreview" alt="Upload Preview">
+                                    <button type="button" id="removePreviewBtn"><i class="fa-solid fa-circle-xmark"></i></button>
+                                </div>
+                                <div class="input-row">
+                                    <label for="chatImageUpload" class="file-upload-label" title="Upload Media/Context Document">
+                                        <i class="fa-solid fa-paperclip"></i>
+                                        <input type="file" id="chatImageUpload" accept="image/*,application/pdf" style="display:none;">
+                                    </label>
+                                    <textarea id="chatInput" placeholder="Message Nexus..." rows="1"></textarea>
+                                    <div class="control-buttons">
+                                        <button type="button" id="stopGenerationBtn" class="control-btn hidden" title="Stop Stream"><i class="fa-solid fa-stop"></i></button>
+                                        <button type="submit" id="sendChatBtn" class="control-btn"><i class="fa-solid fa-paper-plane"></i></button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="dashboard-view" class="app-view">
+                    <h2 class="section-title"><i class="fa-solid fa-chart-line"></i> Operational Dashboard</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card glass">
+                            <i class="fa-solid fa-magnifying-glass card-icon"></i>
+                            <div class="stat-val" id="statTotalSearches">0</div>
+                            <div class="stat-label">Total Core Searches</div>
+                        </div>
+                        <div class="stat-card glass">
+                            <i class="fa-solid fa-comments card-icon"></i>
+                            <div class="stat-val" id="statTotalChats">0</div>
+                            <div class="stat-label">AI Dialogues Conducted</div>
+                        </div>
+                        <div class="stat-card glass">
+                            <i class="fa-solid fa-star card-icon"></i>
+                            <div class="stat-val" id="statTotalFavorites">0</div>
+                            <div class="stat-label">Pinned Discoveries</div>
+                        </div>
+                        <div class="stat-card glass">
+                            <i class="fa-solid fa-network-wired card-icon text-glow"></i>
+                            <div class="stat-val" id="statOnlineUsers">1</div>
+                            <div class="stat-label">Global Active Nodes</div>
+                        </div>
+                    </div>
+                    <div class="dashboard-charts-layout">
+                        <div class="recent-activity-box glass">
+                            <h3><i class="fa-solid fa-wave-square"></i> Realtime Stream Log</h3>
+                            <div class="activity-timeline" id="recentActivityLog">
+                                <div class="empty-placeholder">Awaiting operational cycles...</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="history-view" class="app-view">
+                    <div class="section-header-row">
+                        <h2 class="section-title"><i class="fa-solid fa-history"></i> Epoch Search Log</h2>
+                        <button class="btn btn-danger btn-sm" id="clearAllHistoryBtn"><i class="fa-solid fa-dumpster"></i> Purge History</button>
+                    </div>
+                    <div class="history-list-container" id="historyList">
+                        <div class="empty-placeholder">Your timeline is completely empty.</div>
+                    </div>
+                </section>
+
+                <section id="favorites-view" class="app-view">
+                    <h2 class="section-title"><i class="fa-solid fa-bookmark"></i> Curated Knowledge Matrix</h2>
+                    <div class="favorites-grid" id="favoritesGrid">
+                        <div class="empty-placeholder">No nodes saved to persistent core matrix.</div>
+                    </div>
+                </section>
+
+                <section id="settings-view" class="app-view">
+                    <h2 class="section-title"><i class="fa-solid fa-sliders"></i> Engine Core Configurations</h2>
+                    <div class="settings-layout glass">
+                        <div class="settings-group">
+                            <h3><i class="fa-solid fa-microchip"></i> Global AI Provider Setup</h3>
+                            <div class="setting-control">
+                                <label for="apiProviderSelect">Active Orchestrator Framework</label>
+                                <select id="apiProviderSelect" class="form-input">
+                                    <option value="openai">OpenAI (GPT-4o / O1)</option>
+                                    <option value="gemini">Google Gemini Pro 1.5</option>
+                                    <option value="claude">Anthropic Claude 3.5 Sonnet</option>
+                                    <option value="deepseek">DeepSeek R1 / V3</option>
+                                    <option value="groq">Groq High-Speed Llama 3</option>
+                                </select>
+                            </div>
+                            <div class="setting-control">
+                                <label for="apiKeyInput">Provider Security Token (Kept Locally/Isolated)</label>
+                                <input type="password" id="apiKeyInput" class="form-input" placeholder="sk-........................">
+                            </div>
+                        </div>
+
+                        <div class="settings-group">
+                            <h3><i class="fa-solid fa-sliders"></i> Context Vector Constraints</h3>
+                            <div class="setting-control">
+                                <label for="responseLengthSelect">Output Parameter Depth</label>
+                                <select id="responseLengthSelect" class="form-input">
+                                    <option value="short">Short (Precise Core Answers)</option>
+                                    <option value="long">Long (Deep Exhaustive Summaries / Code)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="settings-group">
+                            <h3><i class="fa-solid fa-palette"></i> Workspace Preference</h3>
+                            <div class="setting-control">
+                                <label for="languageSelect">System Context Language</label>
+                                <select id="languageSelect" class="form-input">
+                                    <option value="en">English (US/UK)</option>
+                                    <option value="id">Bahasa Indonesia</option>
+                                </select>
+                            </div>
+                            <div class="setting-control check-control">
+                                <input type="checkbox" id="pushNotificationsToggle">
+                                <label for="pushNotificationsToggle">Enable Telemetry Push Notifications</label>
+                            </div>
+                        </div>
+
+                        <div class="settings-actions">
+                            <button class="btn" id="exportDataBtn"><i class="fa-solid fa-download"></i> Export Core Matrix Data</button>
+                            <button class="btn btn-danger" id="deleteAccountBtn"><i class="fa-solid fa-skull-crossbones"></i> Deconstruct Account</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="profile-view" class="app-view">
+                    <h2 class="section-title"><i class="fa-solid fa-user-astronaut"></i> Operator Status</h2>
+                    <div class="profile-card glass">
+                        <div class="profile-header-meta">
+                            <div class="avatar-picker-zone">
+                                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=300" alt="User Profile Picture" id="profileImageDisplay">
+                                <label for="avatarUploadInput" class="avatar-edit-label"><i class="fa-solid fa-camera"></i></label>
+                                <input type="file" id="avatarUploadInput" accept="image/*" style="display: none;">
+                            </div>
+                            <div class="profile-names">
+                                <h3 id="profileDisplayName">Nexus Core Operator</h3>
+                                <p id="profileEmailDisplay">anonymous@nexus.ai</p>
+                                <span class="badge badge-cyber" id="accountTypeBadge">Anonymous Instance</span>
+                            </div>
+                        </div>
+                        <div class="profile-body-form">
+                            <div class="form-group">
+                                <label>Modify Identity Alias</label>
+                                <input type="text" id="updateDisplayNameInput" class="form-input" placeholder="New alias...">
+                            </div>
+                            <button class="btn" id="saveProfileBtn"><i class="fa-solid fa-floppy-disk"></i> Commit System Changes</button>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <button class="fab-btn" id="quickAiFab" title="Quick AI Insight"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h2>Initialize Identity Authentication</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">Access secure vector index databases, sync structural layouts across client machines, and lock API models.</p>
+                <form id="emailAuthForm">
+                    <div class="form-group">
+                        <input type="email" id="authEmail" class="form-input" placeholder="Identity Matrix Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="authPassword" class="form-input" placeholder="Access Cipher" required>
+                    </div>
+                    <button type="submit" class="btn btn-full">Synchronize Identity Via Email</button>
+                </form>
+                <div class="divider"><span>OR ALTERNATE INTEGRATIONS</span></div>
+                <div class="oauth-buttons">
+                    <button class="btn btn-oauth" id="googleLoginBtn"><i class="fa-brands fa-google text-glow"></i> Compute with Google Node</button>
+                    <button class="btn btn-secondary btn-full" id="anonymousLoginBtn"><i class="fa-solid fa-user-secret"></i> Generate Instant Anonymous Token</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+</body>
+</html>
